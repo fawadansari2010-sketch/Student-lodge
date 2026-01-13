@@ -8,121 +8,46 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
 <title>Fawad Apps – Student Lodge</title>
-
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: #f4f4f5;
-  font-family: system-ui, sans-serif;
-}
-
-/* Full-screen fix for mobile */
+html,body{margin:0;padding:0;height:100%;background:#f4f4f5;font-family:system-ui}
 body, #list, .table-wrap { min-height: 100vh; }
-
 /* HEADER */
 header{
-  position:sticky;top:0;z-index:100;
-  background:#fff;
-  padding:14px 16px;
-  display:flex;justify-content:space-between;align-items:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  border-radius:0 0 22px 22px
+  position:sticky;top:0;z-index:100;background:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.1);border-radius:0 0 22px 22px;
 }
 .menu{font-size:24px;cursor:pointer}
 .title{font-weight:700}
-
+/* ADD STUDENT BUTTON TOP RIGHT */
+#addStudentBtn{
+  background:#4f46e5;color:white;border:none;border-radius:14px;padding:6px 10px;font-size:16px;cursor:pointer;
+  margin-left:8px;
+}
 /* MENU */
-#menu{
-  position:fixed;top:70px;left:10px;width:230px;
-  background:#fff;border-radius:20px;padding:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:200
-}
-#menu button,#menu input{
-  width:100%;margin:6px 0;padding:10px;
-  border-radius:14px;border:1px solid #d1d5db
-}
-
+#menu{position:fixed;top:70px;left:10px;width:230px;background:#fff;border-radius:20px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:200}
+#menu button,#menu input{width:100%;margin:6px 0;padding:10px;border-radius:14px;border:1px solid #d1d5db}
 /* SEARCH */
-#searchCard{
-  margin:10px;padding:6px;background:#fff;
-  border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1)
-}
-
+#searchCard{margin:10px;padding:6px;background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
 /* LIST */
-.table-wrap{
-  margin:10px;background:#fff;
-  border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);
-  max-height:calc(100vh - 200px);overflow:auto;padding:8px
-}
-.row{
-  background:#f4f4f5;border-radius:16px;
-  padding:10px;margin-bottom:8px;display:flex;flex-direction:column;
-}
+.table-wrap{margin:10px;background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:calc(100vh - 200px);overflow:auto;padding:8px}
+.row{background:#f4f4f5;border-radius:16px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;}
 .serial{font-weight:600;margin-bottom:6px}
-
-/* NAME + ARROW + Tick */
-.name-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.arrow{
-  font-size:18px;
-  cursor:pointer;
-  user-select:none;
-  transition:transform .25s ease
-}
+/* NAME + ARROW + TICK */
+.name-row{display:flex;align-items:center;gap:8px}
+.arrow{font-size:18px;cursor:pointer;user-select:none;transition:transform .25s ease}
 .arrow.open{transform:rotate(180deg) scale(1.15);}
-.status-icon{
-  font-size:18px;
-}
-
+.status-icon{font-size:18px}
 /* INPUTS */
-input, select{
-  width:100%;padding:10px;font-size:14px;
-  border-radius:14px;border:1.5px solid #d1d5db;
-  box-sizing:border-box;
-}
-button{
-  padding:10px;border-radius:14px;border:none;
-  background:#4f46e5;color:white;margin-top:6px
-}
-
-.paid{background:#16a34a;color:#fff}
-.not-paid{background:#dc2626;color:#fff}
-
+input,select{width:100%;padding:10px;font-size:14px;border-radius:14px;border:1.5px solid #d1d5db;box-sizing:border-box}
+button{padding:10px;border-radius:14px;border:none;background:#4f46e5;color:white;margin-top:6px}
+/* PAID/NOT PAID */
+.paid-badge{display:inline-block;padding:6px 14px;background:#16a34a;color:white;font-size:13px;font-weight:600;border-radius:999px;margin-top:6px;animation:paidPop .35s ease}
+@keyframes paidPop{0%{transform:translateY(6px) scale(.85);opacity:0}60%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(0) scale(1);opacity:1}}
 .details{display:none;margin-top:8px}
-
-/* PAID BADGE */
-.paid-badge{
-  display:inline-block;padding:6px 14px;
-  background:#16a34a;color:white;
-  font-size:13px;font-weight:600;
-  border-radius:999px;margin-top:6px;
-  animation:paidPop .35s ease
-}
-@keyframes paidPop{
-  0%{transform:translateY(6px) scale(.85);opacity:0}
-  60%{transform:translateY(-2px) scale(1.05)}
-  100%{transform:translateY(0) scale(1);opacity:1}
-}
-
-/* FAB */
-#fab{
-  position:fixed;right:20px;bottom:20px;
-  width:60px;height:60px;border-radius:50%;
-  background:#4f46e5;color:white;
-  font-size:32px;display:flex;
-  align-items:center;justify-content:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.1)
-}
 </style>
 </head>
 
@@ -131,10 +56,12 @@ button{
 <header>
   <div class="menu" onclick="toggleMenu()">☰</div>
   <div class="title">Fawad Apps</div>
+  <button id="addStudentBtn" onclick="addStudent()">＋ Add</button>
 </header>
 
 <div id="menu">
   <input type="month" id="monthPicker" onchange="changeMonth()">
+  <button onclick="saveData()">💾 Save</button>
   <button onclick="exportPDF()">📄 Export PDF</button>
   <button onclick="backup()">📤 Backup</button>
   <button onclick="restore()">📥 Restore</button>
@@ -146,8 +73,6 @@ button{
 
 <div class="table-wrap" id="list"></div>
 
-<div id="fab" onclick="addStudent()">＋</div>
-
 <script>
 let monthKey = new Date().toISOString().slice(0,7);
 let data = JSON.parse(localStorage.getItem("data_"+monthKey) || "[]");
@@ -155,15 +80,10 @@ const list = document.getElementById("list");
 const menu = document.getElementById("menu");
 document.getElementById("monthPicker").value = monthKey;
 
-function toggleMenu(){
-  menu.style.display = menu.style.display==="block"?"none":"block";
-}
+function toggleMenu(){menu.style.display = menu.style.display==="block"?"none":"block";}
+function addStudent(){data.push({}); render();}
 
-function addStudent(){
-  data.push({});
-  render();
-}
-
+/* RENDER */
 function render(){
   list.innerHTML="";
   data.forEach((r,i)=>{
@@ -172,13 +92,11 @@ function render(){
     const tick = r.paid ? '✅' : '❌';
     row.innerHTML=`
       <div class="serial">${i+1}. Student</div>
-
       <div class="name-row">
         <div class="status-icon">${tick}</div>
         <input placeholder="Name" value="${r.name||""}">
         <div class="arrow">▾</div>
       </div>
-
       <div class="details">
         <input placeholder="Floor" value="${r.floor||""}">
         <input placeholder="Room" value="${r.room||""}">
@@ -191,7 +109,6 @@ function render(){
         <button>🗑 Delete</button>
       </div>
     `;
-
     const name=row.querySelectorAll("input")[0];
     const floor=row.querySelectorAll("input")[1];
     const room=row.querySelectorAll("input")[2];
@@ -211,62 +128,44 @@ function render(){
       const open=details.style.display==="block";
       document.querySelectorAll(".details").forEach(d=>d.style.display="none");
       document.querySelectorAll(".arrow").forEach(a=>a.classList.remove("open"));
-      if(!open){
-        details.style.display="block";
-        arrow.classList.add("open");
-      }
+      if(!open){details.style.display="block";arrow.classList.add("open");}
     };
 
-    select.onchange=e=>{
-      r.paid=e.target.value==="Paid";
-      statusIcon.textContent = r.paid ? '✅' : '❌';
-      render();
-    };
-
-    del.onclick=()=>{
-      data.splice(i,1);
-      render();
-    };
-
+    select.onchange=e=>{r.paid=e.target.value==="Paid"; statusIcon.textContent=r.paid?'✅':'❌'; render();}
+    del.onclick=()=>{data.splice(i,1); render();}
     list.appendChild(row);
   });
-  save();
 }
 
+/* SEARCH */
 function search(q){
   q=q.toLowerCase();
   [...list.children].forEach(r=>{
-    const name = r.querySelectorAll("input")[0].value.toLowerCase();
-    const floor = r.querySelectorAll("input")[1].value.toLowerCase();
-    const room = r.querySelectorAll("input")[2].value.toLowerCase();
-    const mobile = r.querySelectorAll("input")[3].value.toLowerCase();
+    const name=r.querySelectorAll("input")[0].value.toLowerCase();
+    const floor=r.querySelectorAll("input")[1].value.toLowerCase();
+    const room=r.querySelectorAll("input")[2].value.toLowerCase();
+    const mobile=r.querySelectorAll("input")[3].value.toLowerCase();
     r.style.display=(name.includes(q)||floor.includes(q)||room.includes(q)||mobile.includes(q))?"":"none";
   });
 }
 
-function save(){
-  localStorage.setItem("data_"+monthKey,JSON.stringify(data));
-}
+/* SAVE */
+function saveData(){localStorage.setItem("data_"+monthKey,JSON.stringify(data)); alert("Saved locally ✅");}
 
-function changeMonth(){
-  save();
-  monthKey=document.getElementById("monthPicker").value;
-  data=JSON.parse(localStorage.getItem("data_"+monthKey)||"[]");
-  render();
-}
+/* MONTH CHANGE */
+function changeMonth(){saveData(); monthKey=document.getElementById("monthPicker").value; data=JSON.parse(localStorage.getItem("data_"+monthKey)||"[]"); render();}
 
+/* PDF */
 function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
   doc.text("Student Lodge – "+monthKey,10,10);
   let y=20;
-  data.forEach((r,i)=>{
-    doc.text(`${i+1}. ${r.name||""} | Floor ${r.floor||""} | Room ${r.room||""} | Mobile ${r.mobile||""} | ${r.paid?"Paid":"Not Paid"}`,10,y);
-    y+=8;
-  });
+  data.forEach((r,i)=>{doc.text(`${i+1}. ${r.name||""} | Floor ${r.floor||""} | Room ${r.room||""} | Mobile ${r.mobile||""} | ${r.paid?"Paid":"Not Paid"}`,10,y); y+=8;});
   doc.save("Student_Lodge_"+monthKey+".pdf");
 }
 
+/* BACKUP */
 function backup(){
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"}));
@@ -274,21 +173,25 @@ function backup(){
   a.click();
 }
 
+/* RESTORE */
 function restore(){
   const i=document.createElement("input");
   i.type="file";
   i.onchange=e=>{
     const reader=new FileReader();
-    reader.onload=()=>{
-      data=JSON.parse(reader.result);
-      render();
-    };
+    reader.onload=()=>{data=JSON.parse(reader.result); render();}
     reader.readAsText(e.target.files[0]);
   };
   i.click();
 }
 
+/* REGISTER SERVICE WORKER FOR OFFLINE SUPPORT */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(()=>console.log("Service Worker Registered"));
+}
+
 render();
 </script>
+
 </body>
 </html>

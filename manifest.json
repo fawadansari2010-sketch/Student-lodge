@@ -1,7 +1,7 @@
 {
   "name": "Fawad Apps – Student Lodge",
-  "short_name": "Fawad Lodge",
-  "start_url": "index.html",
+  "short_name": "Fawad Apps",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#4f46e5",
   "theme_color": "#4f46e5",

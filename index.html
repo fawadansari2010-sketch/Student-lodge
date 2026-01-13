@@ -28,7 +28,17 @@ body.dark{
   --border:#334155;
   --shadow:0 10px 25px rgba(0,0,0,.4);
 }
-*{box-sizing:border-box}
+
+/* REMOVE BLUE TAP HIGHLIGHT */
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select:none;
+}
+input{
+  user-select:text;
+}
+
 body{
   margin:0;
   background:var(--bg);
@@ -76,15 +86,24 @@ header{
   box-shadow:var(--shadow);
   border-radius:0 0 22px 22px;
 }
-.menu{font-size:22px;cursor:pointer}
+
+/* THREE DOTS – WIDER */
+.menu{
+  font-size:22px;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:12px;
+}
+.menu:active{opacity:.6}
+
 .title{font-weight:800}
 
-/* MENU */
+/* MENU PANEL */
 #menu{
   position:fixed;
   top:68px;
-  left:12px;   /* SAME SIDE AS DOTS */
-  width:200px;
+  left:12px;
+  width:220px;
   background:var(--card);
   border-radius:18px;
   padding:10px;
@@ -105,7 +124,7 @@ header{
 }
 
 /* LIST */
-#list{padding-bottom:120px}
+#list{padding-bottom:140px}
 .row{
   margin:10px;
   background:var(--card);
@@ -157,26 +176,27 @@ button{
 }
 .delete{background:#dc2626}
 
-/* ADD BUTTON */
+/* PLUS BUTTON – FIXED */
 #add{
   position:fixed;
-  bottom:18px;
-  right:18px;
-  width:62px;height:62px;
+  bottom:24px;
+  right:24px;
+  width:68px;
+  height:68px;
   border-radius:50%;
-  font-size:32px;
+  font-size:34px;
   display:flex;
   align-items:center;
   justify-content:center;
   box-shadow:var(--shadow);
   z-index:150;
 }
+#add:active{transform:scale(.94)}
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="logo">Fawad Apps</div>
   <button id="startBtn" onclick="startApp()">START</button>
@@ -219,13 +239,8 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-function add(){
-  data.push({});
-  save();render();
-}
-function save(){
-  localStorage.setItem("data",JSON.stringify(data));
-}
+function add(){data.push({});save();render();}
+function save(){localStorage.setItem("data",JSON.stringify(data));}
 function backup(){
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data)]));
@@ -240,14 +255,8 @@ function restore(){
     r.readAsText(e.target.files[0]);
   };i.click();
 }
-function togglePaid(i){
-  data[i].paid=!data[i].paid;
-  save();render();
-}
-function del(i){
-  data.splice(i,1);
-  save();render();
-}
+function togglePaid(i){data[i].paid=!data[i].paid;save();render();}
+function del(i){data.splice(i,1);save();render();}
 
 function render(){
   list.innerHTML="";

@@ -11,7 +11,9 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.png">
 
+<!-- jsPDF + AutoTable -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 :root{
@@ -28,7 +30,7 @@ header{
 }
 .menu{font-size:24px;cursor:pointer}
 .title{font-weight:700}
-/* ADD STUDENT BUTTON TOP RIGHT */
+/* ADD STUDENT BUTTON */
 #addStudentBtn{
   background:var(--primary);color:white;border:none;border-radius:14px;padding:6px 10px;font-size:16px;cursor:pointer;margin-left:8px;
 }
@@ -174,30 +176,33 @@ function changeMonth(){saveData(); monthKey=document.getElementById("monthPicker
 
 /* PDF EXPORT (pretty table) */
 function exportPDF(){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
-  doc.setFontSize(16);
-  doc.text("Student Lodge – "+monthKey,10,10);
-  doc.setFontSize(12);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-  // Table headers
-  const startY = 20;
-  const rowHeight = 8;
-  let y = startY;
-  doc.setFillColor(240,240,240);
-  doc.rect(10,y-6,190,rowHeight,true);
-  doc.text("S.No",12,y);
-  doc.text("Name",35,y);
-  doc.text("Status",160,y);
-  y+=rowHeight;
+  doc.setFontSize(16);
+  doc.text("Student Lodge – "+monthKey, 14, 15);
+
+  // Table headers and rows
+  const tableColumn = ["S.No", "Name", "Status"];
+  const tableRows = [];
 
   data.forEach((r,i)=>{
-    if(i%2===0) doc.setFillColor(245,245,245); else doc.setFillColor(255,255,255);
-    doc.rect(10,y-6,190,rowHeight,true);
-    doc.text(String(i+1),12,y);
-    doc.text(r.name||"",35,y);
-    doc.text(r.paid?"Paid":"Not Paid",160,y);
-    y+=rowHeight;
+    const rowData = [i+1, r.name||"", r.paid?"Paid":"Not Paid"];
+    tableRows.push(rowData);
+  });
+
+  doc.autoTable({
+    head: [tableColumn],
+    body: tableRows,
+    startY: 25,
+    styles: { fontSize: 12, cellPadding: 3 },
+    headStyles: { fillColor: [79, 70, 229], textColor: 255 },
+    alternateRowStyles: { fillColor: [245,245,245] },
+    columnStyles: {
+      0: { cellWidth: 20 },
+      1: { cellWidth: 120 },
+      2: { cellWidth: 40, halign: 'center' }
+    }
   });
 
   doc.save("Student_Lodge_"+monthKey+".pdf");

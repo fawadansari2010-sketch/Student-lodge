@@ -1,4 +1,4 @@
-const cacheName = 'student-lodge-v2';
+const cacheName = 'student-lodge-v4';
 const assets = [
   '/',
   '/index.html',

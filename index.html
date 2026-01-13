@@ -49,7 +49,7 @@ header{
 /* INPUTS */
 input,select{width:100%;padding:10px;font-size:14px;border-radius:14px;border:1.5px solid var(--border);box-sizing:border-box}
 button{padding:10px;border-radius:14px;border:none;background:var(--primary);color:white;margin-top:6px}
-/* PAID/NOT PAID */
+/* PAID BADGE ANIMATION */
 .paid-badge{display:inline-block;padding:6px 14px;background:#16a34a;color:white;font-size:13px;font-weight:600;border-radius:999px;margin-top:6px;animation:paidPop .5s ease;}
 @keyframes paidPop{0%{transform:translateY(6px) scale(.85);opacity:0}60%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(0) scale(1);opacity:1}}
 .details{display:none;margin-top:8px}
@@ -74,7 +74,7 @@ button{padding:10px;border-radius:14px;border:none;background:var(--primary);col
 </div>
 
 <div id="searchCard">
-  <input id="searchInput" placeholder="Search name / floor / room / mobile" oninput="search(this.value)">
+  <input id="searchInput" placeholder="Search name" oninput="search(this.value)">
 </div>
 
 <div class="table-wrap" id="list"></div>
@@ -112,9 +112,6 @@ function render(){
         <div class="arrow">▾</div>
       </div>
       <div class="details">
-        <input placeholder="Floor" value="${r.floor||""}">
-        <input placeholder="Room" value="${r.room||""}">
-        <input type="tel" inputmode="numeric" placeholder="Mobile Number" value="${r.mobile||""}">
         <select class="${r.paid?'paid':'not-paid'}">
           <option>Not Paid</option>
           <option ${r.paid?'selected':''}>Paid</option>
@@ -124,9 +121,6 @@ function render(){
       </div>
     `;
     const name=row.querySelectorAll("input")[0];
-    const floor=row.querySelectorAll("input")[1];
-    const room=row.querySelectorAll("input")[2];
-    const mobile=row.querySelectorAll("input")[3];
     const arrow=row.querySelector(".arrow");
     const details=row.querySelector(".details");
     const select=row.querySelector("select");
@@ -134,9 +128,6 @@ function render(){
     const statusIcon=row.querySelector(".status-icon");
 
     name.oninput=e=>r.name=e.target.value;
-    floor.oninput=e=>r.floor=e.target.value;
-    room.oninput=e=>r.room=e.target.value;
-    mobile.oninput=e=>r.mobile=e.target.value;
 
     arrow.onclick=()=>{
       const open=details.style.display==="block";
@@ -160,6 +151,7 @@ function render(){
         if(badge) badge.remove();
       }
     }
+
     del.onclick=()=>{data.splice(i,1); render();}
     list.appendChild(row);
   });
@@ -170,10 +162,7 @@ function search(q){
   q=q.toLowerCase();
   [...list.children].forEach(r=>{
     const name=r.querySelectorAll("input")[0].value.toLowerCase();
-    const floor=r.querySelectorAll("input")[1].value.toLowerCase();
-    const room=r.querySelectorAll("input")[2].value.toLowerCase();
-    const mobile=r.querySelectorAll("input")[3].value.toLowerCase();
-    r.style.display=(name.includes(q)||floor.includes(q)||room.includes(q)||mobile.includes(q))?"":"none";
+    r.style.display=name.includes(q)?"":"none";
   });
 }
 
@@ -183,13 +172,34 @@ function saveData(){localStorage.setItem("data_"+monthKey,JSON.stringify(data));
 /* MONTH CHANGE */
 function changeMonth(){saveData(); monthKey=document.getElementById("monthPicker").value; data=JSON.parse(localStorage.getItem("data_"+monthKey)||"[]"); render();}
 
-/* PDF */
+/* PDF EXPORT (pretty table) */
 function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
+  doc.setFontSize(16);
   doc.text("Student Lodge – "+monthKey,10,10);
-  let y=20;
-  data.forEach((r,i)=>{doc.text(`${i+1}. ${r.name||""} | Floor ${r.floor||""} | Room ${r.room||""} | Mobile ${r.mobile||""} | ${r.paid?"Paid":"Not Paid"}`,10,y); y+=8;});
+  doc.setFontSize(12);
+
+  // Table headers
+  const startY = 20;
+  const rowHeight = 8;
+  let y = startY;
+  doc.setFillColor(240,240,240);
+  doc.rect(10,y-6,190,rowHeight,true);
+  doc.text("S.No",12,y);
+  doc.text("Name",35,y);
+  doc.text("Status",160,y);
+  y+=rowHeight;
+
+  data.forEach((r,i)=>{
+    if(i%2===0) doc.setFillColor(245,245,245); else doc.setFillColor(255,255,255);
+    doc.rect(10,y-6,190,rowHeight,true);
+    doc.text(String(i+1),12,y);
+    doc.text(r.name||"",35,y);
+    doc.text(r.paid?"Paid":"Not Paid",160,y);
+    y+=rowHeight;
+  });
+
   doc.save("Student_Lodge_"+monthKey+".pdf");
 }
 

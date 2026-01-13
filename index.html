@@ -151,15 +151,12 @@ input{
 
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div>
     <h1>Fawad Apps <span>A Company of Trust</span></h1>
     <h2>Naoushad Raushan Lodge</h2>
   </div>
-
   <button class="go-btn" type="button" onclick="enterApp()">GO</button>
-
   <footer>This app is created by Fawad Ansari</footer>
 </div>
 
@@ -188,7 +185,6 @@ function enterApp(){
   document.getElementById("splash").style.display="none";
 }
 
-/* MENU */
 const menu=document.getElementById("menu");
 document.getElementById("menuBtn").onclick=(e)=>{
   const r=e.target.getBoundingClientRect();
@@ -197,7 +193,6 @@ document.getElementById("menuBtn").onclick=(e)=>{
   menu.style.display=menu.style.display==="block"?"none":"block";
 };
 
-/* DATA */
 let currentMonth=localStorage.getItem("currentMonth")||new Date().toISOString().slice(0,7);
 let data=JSON.parse(localStorage.getItem("data_"+currentMonth)||"[]");
 monthPicker.value=currentMonth;
@@ -281,16 +276,46 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
+/* ✅ ONLY THIS FUNCTION CHANGED */
 function exportPDF(){
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y=20;
+  const doc = new jsPDF("p","mm","a4");
+
+  let x = 10;
+  let y = 20;
+  let rowH = 10;
+  let colW = [20, 110, 40];
+
+  doc.setFontSize(14);
   doc.text("Student Lodge Report",105,10,{align:"center"});
-  data.forEach((r,i)=>{
-    if(y>280){doc.addPage();y=20;}
-    doc.text(`${i+1}. ${r.name||""} - ${r.paid?"PAID":"NOT PAID"}`,10,y);
-    y+=8;
+
+  doc.setFontSize(11);
+  doc.setDrawColor(0);
+
+  // Header
+  ["No","Name","Status"].forEach((t,i)=>{
+    doc.rect(x + colW.slice(0,i).reduce((a,b)=>a+b,0), y, colW[i], rowH);
+    doc.text(t, x + colW.slice(0,i).reduce((a,b)=>a+b,0) + 3, y + 7);
   });
+
+  y += rowH;
+
+  data.forEach((r,i)=>{
+    if(y > 280){
+      doc.addPage();
+      y = 20;
+    }
+    doc.rect(x, y, colW[0], rowH);
+    doc.rect(x+colW[0], y, colW[1], rowH);
+    doc.rect(x+colW[0]+colW[1], y, colW[2], rowH);
+
+    doc.text(String(i+1), x+3, y+7);
+    doc.text(r.name||"", x+colW[0]+3, y+7);
+    doc.text(r.paid?"PAID":"NOT PAID", x+colW[0]+colW[1]+3, y+7);
+
+    y += rowH;
+  });
+
   doc.save("Student_Lodge_"+currentMonth+".pdf");
 }
 

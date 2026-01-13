@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>Fawad Apps – Student Lodge</title>
 
 <link rel="manifest" href="manifest.json">
@@ -20,14 +19,14 @@ content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   --text:#111827;
   --primary:#4f46e5;
   --border:#d1d5db;
-  --shadow:0 10px 30px rgba(0,0,0,.12);
+  --shadow:0 10px 25px rgba(0,0,0,.12);
 }
 body.dark{
   --bg:#020617;
   --card:#0f172a;
   --text:#e5e7eb;
   --border:#334155;
-  --shadow:0 10px 30px rgba(0,0,0,.4);
+  --shadow:0 10px 25px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box}
 body{
@@ -35,13 +34,11 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:system-ui,sans-serif;
-  overscroll-behavior:none;
 }
 
-/* ===== Splash ===== */
+/* SPLASH */
 #splash{
-  position:fixed;
-  inset:0;
+  position:fixed;inset:0;
   background:var(--primary);
   display:flex;
   flex-direction:column;
@@ -56,30 +53,21 @@ body{
   animation:float 2.4s ease-in-out infinite;
 }
 #startBtn{
-  margin-top:30px;
-  padding:14px 40px;
+  margin-top:28px;
+  padding:14px 42px;
   border-radius:999px;
   border:none;
   background:white;
   color:var(--primary);
-  font-size:16px;
   font-weight:700;
-  animation:pulse 1.6s ease-in-out infinite;
+  animation:pulse 1.5s infinite;
 }
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-12px)}
-}
-@keyframes pulse{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
-/* ===== Header ===== */
+/* HEADER */
 header{
-  position:sticky;
-  top:0;
-  z-index:100;
+  position:sticky;top:0;z-index:100;
   background:var(--card);
   padding:14px 16px;
   display:flex;
@@ -88,38 +76,40 @@ header{
   box-shadow:var(--shadow);
   border-radius:0 0 22px 22px;
 }
-.menu{font-size:24px;cursor:pointer}
+.menu{font-size:22px;cursor:pointer}
 .title{font-weight:800}
 
-/* ===== Menu ===== */
+/* MENU */
 #menu{
   position:fixed;
-  top:70px;
-  right:12px;
+  top:68px;
+  left:12px;   /* SAME SIDE AS DOTS */
+  width:200px;
   background:var(--card);
-  padding:12px;
-  border-radius:20px;
+  border-radius:18px;
+  padding:10px;
   box-shadow:var(--shadow);
   display:none;
-  width:200px;
+  z-index:200;
 }
-#menu button,input{width:100%;margin-bottom:6px}
+#menu button,#menu input{width:100%;margin-bottom:6px}
 
-/* ===== Search ===== */
+/* SEARCH */
 #search{
   margin:10px;
   padding:12px;
   border-radius:999px;
   border:1.5px solid var(--border);
   background:var(--card);
+  width:calc(100% - 20px);
 }
 
-/* ===== List ===== */
+/* LIST */
 #list{padding-bottom:120px}
 .row{
   margin:10px;
   background:var(--card);
-  border-radius:22px;
+  border-radius:20px;
   box-shadow:var(--shadow);
   overflow:hidden;
 }
@@ -129,8 +119,12 @@ header{
   padding:14px;
   gap:10px;
 }
+.serial{
+  font-weight:700;
+  width:28px;
+}
 .status-dot{
-  width:12px;height:12px;border-radius:50%;
+  width:10px;height:10px;border-radius:50%;
 }
 .arrow{
   margin-left:auto;
@@ -138,12 +132,12 @@ header{
 }
 .arrow.open{transform:rotate(180deg)}
 .details{
-  padding:12px;
   display:none;
-  animation:expand .25s ease forwards;
+  padding:12px;
+  animation:expand .25s ease;
 }
 @keyframes expand{
-  from{opacity:0;transform:translateY(-4px)}
+  from{opacity:0;transform:translateY(-6px)}
   to{opacity:1;transform:translateY(0)}
 }
 input{
@@ -161,40 +155,41 @@ button{
   color:white;
   font-weight:600;
 }
-.delete{
-  background:#dc2626;
-}
+.delete{background:#dc2626}
+
+/* ADD BUTTON */
 #add{
   position:fixed;
-  bottom:20px;
-  right:20px;
-  width:64px;
-  height:64px;
+  bottom:18px;
+  right:18px;
+  width:62px;height:62px;
   border-radius:50%;
-  font-size:34px;
+  font-size:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:var(--shadow);
+  z-index:150;
 }
-
-/* Fullscreen fix */
-html,body{height:100%}
 </style>
 </head>
 
 <body>
 
-<!-- Splash -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="logo">Fawad Apps</div>
   <button id="startBtn" onclick="startApp()">START</button>
 </div>
 
 <header>
-  <div class="menu" onclick="toggleMenu()">☰</div>
+  <div class="menu" onclick="toggleMenu()">⋮</div>
   <div class="title">Student Lodge</div>
 </header>
 
 <div id="menu">
   <input type="month" id="month">
-  <button onclick="toggleDark()">🌙 Dark</button>
+  <button onclick="toggleDark()">🌙 Dark Mode</button>
   <button onclick="save()">💾 Save</button>
   <button onclick="backup()">📤 Backup</button>
   <button onclick="restore()">📥 Restore</button>
@@ -212,7 +207,7 @@ let data=JSON.parse(localStorage.getItem("data")||"[]");
 let monthKey=new Date().toISOString().slice(0,7);
 
 function startApp(){
-  document.getElementById("splash").style.opacity=0;
+  splash.style.opacity=0;
   setTimeout(()=>splash.remove(),300);
 }
 function toggleMenu(){
@@ -224,8 +219,13 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-function add(){data.push({});render();save();}
-function save(){localStorage.setItem("data",JSON.stringify(data));}
+function add(){
+  data.push({});
+  save();render();
+}
+function save(){
+  localStorage.setItem("data",JSON.stringify(data));
+}
 function backup(){
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data)]));
@@ -236,7 +236,7 @@ function restore(){
   i.type="file";
   i.onchange=e=>{
     const r=new FileReader();
-    r.onload=()=>{data=JSON.parse(r.result);render();save();}
+    r.onload=()=>{data=JSON.parse(r.result);render();save()}
     r.readAsText(e.target.files[0]);
   };i.click();
 }
@@ -246,7 +246,7 @@ function togglePaid(i){
 }
 function del(i){
   data.splice(i,1);
-  render();save();
+  save();render();
 }
 
 function render(){
@@ -256,6 +256,7 @@ function render(){
     row.className="row";
     row.innerHTML=`
       <div class="row-head">
+        <div class="serial">${i+1}</div>
         <div class="status-dot" style="background:${r.paid?'#16a34a':'#dc2626'}"></div>
         <strong>${r.name||"Unnamed"}</strong>
         <div class="arrow">⌄</div>

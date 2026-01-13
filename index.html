@@ -15,21 +15,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-html,body{margin:0;padding:0;height:100%;background:#f4f4f5}
-:root{
-  --bg:#f4f4f5;--card:#fff;--text:#111827;
-  --primary:#4f46e5;--border:#d1d5db;
-  --shadow:0 4px 12px rgba(0,0,0,.1)
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f4f4f5;
+  font-family: system-ui, sans-serif;
 }
-body{font-family:system-ui;background:var(--bg);color:var(--text);padding-bottom:90px}
+
+/* Full-screen fix for mobile */
+body, #list, .table-wrap { min-height: 100vh; }
 
 /* HEADER */
 header{
   position:sticky;top:0;z-index:100;
-  background:var(--card);
+  background:#fff;
   padding:14px 16px;
   display:flex;justify-content:space-between;align-items:center;
-  box-shadow:var(--shadow);
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
   border-radius:0 0 22px 22px
 }
 .menu{font-size:24px;cursor:pointer}
@@ -38,47 +41,58 @@ header{
 /* MENU */
 #menu{
   position:fixed;top:70px;left:10px;width:230px;
-  background:var(--card);border-radius:20px;padding:12px;
-  box-shadow:var(--shadow);display:none;z-index:200
+  background:#fff;border-radius:20px;padding:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:200
 }
 #menu button,#menu input{
   width:100%;margin:6px 0;padding:10px;
-  border-radius:14px;border:1px solid var(--border)
+  border-radius:14px;border:1px solid #d1d5db
 }
 
 /* SEARCH */
 #searchCard{
-  margin:10px;padding:6px;background:var(--card);
-  border-radius:20px;box-shadow:var(--shadow)
+  margin:10px;padding:6px;background:#fff;
+  border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1)
 }
 
 /* LIST */
 .table-wrap{
-  margin:10px;background:var(--card);
-  border-radius:20px;box-shadow:var(--shadow);
-  max-height:65vh;overflow:auto;padding:8px
+  margin:10px;background:#fff;
+  border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);
+  max-height:calc(100vh - 200px);overflow:auto;padding:8px
 }
 .row{
-  background:var(--bg);border-radius:16px;
-  padding:10px;margin-bottom:8px
+  background:#f4f4f5;border-radius:16px;
+  padding:10px;margin-bottom:8px;display:flex;flex-direction:column;
 }
 .serial{font-weight:600;margin-bottom:6px}
 
-/* NAME + ARROW */
-.name-row{display:flex;align-items:center;gap:8px}
+/* NAME + ARROW + Tick */
+.name-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
 .arrow{
-  font-size:18px;cursor:pointer;user-select:none;
+  font-size:18px;
+  cursor:pointer;
+  user-select:none;
   transition:transform .25s ease
 }
-.arrow.open{transform:rotate(180deg) scale(1.15)}
+.arrow.open{transform:rotate(180deg) scale(1.15);}
+.status-icon{
+  font-size:18px;
+}
 
-input,select{
+/* INPUTS */
+input, select{
   width:100%;padding:10px;font-size:14px;
-  border-radius:14px;border:1.5px solid var(--border)
+  border-radius:14px;border:1.5px solid #d1d5db;
+  box-sizing:border-box;
 }
 button{
   padding:10px;border-radius:14px;border:none;
-  background:var(--primary);color:white;margin-top:6px
+  background:#4f46e5;color:white;margin-top:6px
 }
 
 .paid{background:#16a34a;color:#fff}
@@ -104,10 +118,10 @@ button{
 #fab{
   position:fixed;right:20px;bottom:20px;
   width:60px;height:60px;border-radius:50%;
-  background:var(--primary);color:white;
+  background:#4f46e5;color:white;
   font-size:32px;display:flex;
   align-items:center;justify-content:center;
-  box-shadow:var(--shadow)
+  box-shadow:0 4px 12px rgba(0,0,0,.1)
 }
 </style>
 </head>
@@ -141,27 +155,26 @@ const list = document.getElementById("list");
 const menu = document.getElementById("menu");
 document.getElementById("monthPicker").value = monthKey;
 
-/* MENU */
 function toggleMenu(){
   menu.style.display = menu.style.display==="block"?"none":"block";
 }
 
-/* ADD */
 function addStudent(){
   data.push({});
   render();
 }
 
-/* RENDER */
 function render(){
   list.innerHTML="";
   data.forEach((r,i)=>{
     const row=document.createElement("div");
     row.className="row";
+    const tick = r.paid ? '✅' : '❌';
     row.innerHTML=`
       <div class="serial">${i+1}. Student</div>
 
       <div class="name-row">
+        <div class="status-icon">${tick}</div>
         <input placeholder="Name" value="${r.name||""}">
         <div class="arrow">▾</div>
       </div>
@@ -187,6 +200,7 @@ function render(){
     const details=row.querySelector(".details");
     const select=row.querySelector("select");
     const del=row.querySelector("button");
+    const statusIcon=row.querySelector(".status-icon");
 
     name.oninput=e=>r.name=e.target.value;
     floor.oninput=e=>r.floor=e.target.value;
@@ -205,6 +219,7 @@ function render(){
 
     select.onchange=e=>{
       r.paid=e.target.value==="Paid";
+      statusIcon.textContent = r.paid ? '✅' : '❌';
       render();
     };
 
@@ -218,7 +233,6 @@ function render(){
   save();
 }
 
-/* SEARCH FIXED */
 function search(q){
   q=q.toLowerCase();
   [...list.children].forEach(r=>{
@@ -226,18 +240,14 @@ function search(q){
     const floor = r.querySelectorAll("input")[1].value.toLowerCase();
     const room = r.querySelectorAll("input")[2].value.toLowerCase();
     const mobile = r.querySelectorAll("input")[3].value.toLowerCase();
-    if(name.includes(q) || floor.includes(q) || room.includes(q) || mobile.includes(q)){
-      r.style.display="";
-    }else r.style.display="none";
+    r.style.display=(name.includes(q)||floor.includes(q)||room.includes(q)||mobile.includes(q))?"":"none";
   });
 }
 
-/* SAVE */
 function save(){
   localStorage.setItem("data_"+monthKey,JSON.stringify(data));
 }
 
-/* MONTH */
 function changeMonth(){
   save();
   monthKey=document.getElementById("monthPicker").value;
@@ -245,7 +255,6 @@ function changeMonth(){
   render();
 }
 
-/* PDF */
 function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
@@ -258,7 +267,6 @@ function exportPDF(){
   doc.save("Student_Lodge_"+monthKey+".pdf");
 }
 
-/* BACKUP */
 function backup(){
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"}));
@@ -266,7 +274,6 @@ function backup(){
   a.click();
 }
 
-/* RESTORE */
 function restore(){
   const i=document.createElement("input");
   i.type="file";

@@ -174,7 +174,7 @@ function render(){
         <button onclick="togglePaid(${i})">${r.paid?"Paid":"Not Paid"}</button>
         <button style="background:#991b1b" onclick="removeRow(${i})">Delete</button>
       </div>
-    </div>`;
+    </div>`; 
   });
 }
 
@@ -226,33 +226,43 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-/* COLORFUL PDF */
+/* MOBILE-FRIENDLY PDF */
 function exportPDF(){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
-  doc.setFontSize(16);
-  doc.text("Student Lodge Report",14,14);
-  doc.setFontSize(12);
-  doc.text(currentMonth,14,22);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p","mm","a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let startX = 10;
+  let startY = 20;
+  let colWidths = [20, pageWidth-70, 40]; // No, Name, Status
+  let rowHeight = Math.max(8, pageWidth/50); // dynamic row height for small screens
 
-  let y=32;
+  // HEADER
+  doc.setFontSize(16);
+  doc.text("Student Lodge Report", pageWidth/2,14,{align:"center"});
+  doc.setFontSize(12);
+  doc.text(currentMonth, pageWidth/2,22,{align:"center"});
+
+  // Table header
   doc.setFillColor(79,70,229);
   doc.setTextColor(255,255,255);
   ["No","Name","Status"].forEach((h,i)=>{
-    doc.rect(14+i*60,y,60,10,"F");
-    doc.text(h,18+i*60,y+7);
+    doc.rect(startX + (i>0 ? colWidths[0]+(i-1)*(colWidths[1]+colWidths[2]) : 0),startY,colWidths[i],rowHeight,"F");
+    doc.text(h,startX + (i>0 ? colWidths[0]+(i-1)*(colWidths[1]+colWidths[2]) : 0)+2,startY+7);
   });
 
-  y+=10;
+  // Table rows
+  startY += rowHeight;
   data.forEach((r,i)=>{
+    if(startY > 280){doc.addPage(); startY=20;}
     doc.setFillColor(i%2?240:255);
-    doc.rect(14,y,180,10,"F");
+    doc.rect(startX,startY,pageWidth-20,rowHeight,"F");
+
     doc.setTextColor(0,0,0);
-    doc.text(String(i+1),18,y+7);
-    doc.text(r.name||"",78,y+7);
+    doc.text(String(i+1),startX+2,startY+7);
+    doc.text(r.name||"",startX+colWidths[0]+2,startY+7);
     doc.setTextColor(r.paid?22:220,r.paid?163:38,74);
-    doc.text(r.paid?"PAID":"NOT PAID",138,y+7);
-    y+=10;
+    doc.text(r.paid?"PAID":"NOT PAID",startX+colWidths[0]+colWidths[1]+2,startY+7);
+    startY += rowHeight;
   });
 
   doc.save("Student_Lodge_"+currentMonth+".pdf");

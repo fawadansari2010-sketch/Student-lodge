@@ -9,7 +9,6 @@
 <link rel="icon" href="icon.png">
 <meta name="theme-color" content="#4f46e5">
 
-<!-- jsPDF for PDF export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
@@ -19,18 +18,18 @@
   --text:#111827;
   --primary:#4f46e5;
   --border:#d1d5db;
-  --shadow:0 4px 12px rgba(0,0,0,0.1);
+  --shadow:0 4px 12px rgba(0,0,0,.1);
 }
 body.dark{
   --bg:#020617;
   --card:#1e293b;
   --text:#e5e7eb;
   --border:#334155;
-  --shadow:0 4px 12px rgba(0,0,0,0.3);
+  --shadow:0 4px 12px rgba(0,0,0,.35);
 }
 body{
   margin:0;
-  font-family:system-ui, sans-serif;
+  font-family:system-ui,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
@@ -43,109 +42,94 @@ header{
   padding:14px 16px;
   background:var(--card);
   box-shadow:var(--shadow);
-  position: sticky;
+  position:sticky;
   top:0;
   z-index:100;
-  border-bottom-left-radius:20px;
-  border-bottom-right-radius:20px;
+  border-radius:0 0 22px 22px;
 }
 .menu{font-size:24px;cursor:pointer;}
 .title{font-weight:700;font-size:18px}
 
-/* Menu card */
+/* Menu */
 #menu{
   position:fixed;
-  top:60px;
-  right:10px;
-  width:200px;
+  top:70px;
+  left:10px;
+  width:210px;
   background:var(--card);
   border-radius:22px;
   padding:12px;
   box-shadow:var(--shadow);
-  z-index:99;
   display:none;
-  transition:0.3s;
+  z-index:200;
 }
+#menu button{width:100%;margin:6px 0}
 
-/* Search bar sticky */
+/* Search */
 #searchCard{
-  position:sticky;
-  top:72px;
-  z-index:90;
   margin:10px;
-  border-radius:22px;
-  background:var(--card);
-  box-shadow:var(--shadow);
   padding:6px;
+  background:var(--card);
+  border-radius:22px;
+  box-shadow:var(--shadow);
 }
 
-/* Table card */
+/* Table */
 .table-wrap{
-  overflow:auto;
-  max-height:65vh;
   margin:10px;
-  border-radius:22px;
   background:var(--card);
+  border-radius:22px;
   box-shadow:var(--shadow);
+  max-height:65vh;
+  overflow:auto;
   padding:8px;
 }
-table{
-  width:100%;
-  border-collapse: separate;
-  border-spacing:0 8px;
-}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;}
 td{
-  background:var(--card);
   padding:6px;
-  vertical-align:middle;
   border-radius:14px;
 }
-.paid{background:#16a34a;color:white}
-.not-paid{background:#dc2626;color:white}
+.paid{background:#16a34a;color:#fff}
+.not-paid{background:#dc2626;color:#fff}
 
-/* Inputs/buttons */
-input, select{
+input,select{
   width:100%;
-  min-height:40px;
+  min-height:42px;
   padding:10px;
   border:1.5px solid var(--border);
   border-radius:14px;
   font-size:14px;
-  box-sizing:border-box;
 }
-input:focus, select:focus{outline:none;border-color:var(--primary);}
 button{
   border:none;
   border-radius:16px;
-  padding:10px 14px;
+  padding:10px;
   background:var(--primary);
   color:white;
   font-size:14px;
-  margin-top:6px;
-  box-shadow:var(--shadow);
   cursor:pointer;
+  box-shadow:var(--shadow);
 }
 
-/* Floating Action Button */
+/* FAB */
 #fab{
   position:fixed;
-  bottom:20px;
   right:20px;
+  bottom:20px;
   width:60px;
   height:60px;
+  border-radius:50%;
   background:var(--primary);
   color:white;
-  border-radius:50%;
   font-size:32px;
   display:flex;
   align-items:center;
   justify-content:center;
   box-shadow:var(--shadow);
-  cursor:pointer;
-  z-index:100;
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -153,15 +137,12 @@ button{
   <div class="title">Fawad Apps</div>
 </header>
 
-<!-- Three-dot Menu -->
 <div id="menu">
-  <input type="month" id="month">
   <button onclick="toggleDark()">🌙 Dark Mode</button>
-  <button onclick="save()">💾 Save</button>
+  <button onclick="exportPDF()">📄 Export PDF</button>
   <button onclick="backup()">📤 Backup</button>
   <button onclick="restore()">📥 Restore</button>
-  <button onclick="exportPDF()">📄 PDF</button>
-  <button onclick="changePassword()">🔑 Change Password</button>
+  <button onclick="changePin()">🔑 Change PIN</button>
 </div>
 
 <div id="searchCard">
@@ -169,45 +150,56 @@ button{
 </div>
 
 <div class="table-wrap">
-  <table>
-    <tbody id="tbody"></tbody>
-  </table>
+  <table><tbody id="tbody"></tbody></table>
 </div>
 
 <div id="fab" onclick="addStudent()">＋</div>
 
 <script>
-let data = [];
-const tbodyEl = document.getElementById("tbody");
-const menuEl = document.getElementById("menu");
+/* PIN LOCK */
+if(!localStorage.getItem("pin")) localStorage.setItem("pin","1234");
+(function(){
+  const pin=localStorage.getItem("pin");
+  const p=prompt("Enter PIN");
+  if(p!==pin){alert("Wrong PIN");location.reload();}
+})();
 
-// Toggle menu open/close
+/* DATA */
+let data = JSON.parse(localStorage.getItem("data")||"[]");
+const tbody=document.getElementById("tbody");
+const menu=document.getElementById("menu");
+
+/* MENU */
 function toggleMenu(){
-  menuEl.style.display = menuEl.style.display === "block" ? "none" : "block";
+  menu.style.display = menu.style.display==="block"?"none":"block";
 }
+document.addEventListener("click",e=>{
+  if(!menu.contains(e.target)&&!e.target.classList.contains("menu")){
+    menu.style.display="none";
+  }
+});
 
-// Dark mode
+/* DARK MODE */
 function toggleDark(){
   document.body.classList.toggle("dark");
   localStorage.setItem("dark",document.body.classList.contains("dark"));
 }
 if(localStorage.getItem("dark")==="true") document.body.classList.add("dark");
 
-// Add student
+/* ADD STUDENT */
 function addStudent(){
   data.push({});
-  render();
+  save(); render();
 }
 
-// Render table
+/* RENDER + SWIPE DELETE */
 function render(){
-  tbodyEl.innerHTML="";
-  const frag=document.createDocumentFragment();
-  let totalPaid = 0;
+  tbody.innerHTML="";
+  let startX=0;
 
   data.forEach((r,i)=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
       <td>${i+1}</td>
       <td><input placeholder="Name" value="${r.name||''}" oninput="set(${i},'name',this.value)"></td>
       <td><input placeholder="Floor" value="${r.floor||''}" oninput="set(${i},'floor',this.value)"></td>
@@ -218,49 +210,71 @@ function render(){
           <option ${r.paid?'selected':''}>Paid</option>
         </select>
       </td>`;
-    frag.appendChild(tr);
-    if(r.paid) totalPaid++;
+
+    tr.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
+    tr.addEventListener("touchend",e=>{
+      if(startX-e.changedTouches[0].clientX>80){
+        if(confirm("Delete this row?")){
+          data.splice(i,1); save(); render();
+        }
+      }
+    });
+
+    tbody.appendChild(tr);
   });
-
-  tbodyEl.appendChild(frag);
-  document.title = `Paid: ${totalPaid}/${data.length}`;
 }
 
-// Set field
-function set(i,k,v){ data[i][k]=v; }
+/* HELPERS */
+function set(i,k,v){data[i][k]=v;save();}
+function pay(i,v){data[i].paid=v==="Paid";save();render();}
+function save(){localStorage.setItem("data",JSON.stringify(data));}
 
-// Payment toggle
-function pay(i,v){ data[i].paid=v==="Paid"; render(); }
+/* SEARCH */
+function search(q){
+  [...tbody.rows].forEach(r=>{
+    r.style.display=r.innerText.toLowerCase().includes(q.toLowerCase())?"":"none";
+  });
+}
 
-// Save / Backup / Restore
-function save(){ localStorage.setItem("data",JSON.stringify(data)); alert("Saved"); }
-function backup(){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"})); a.download="backup.json"; a.click(); }
-function restore(){ const i=document.createElement("input"); i.type="file"; i.onchange=e=>{ const r=new FileReader(); r.onload=()=>{data=JSON.parse(r.result); render();}; r.readAsText(e.target.files[0]); }; i.click(); }
-
-// Search
-function search(q){ [...tbodyEl.rows].forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q.toLowerCase())?"":"none"); }
-
-// Export PDF
+/* PDF */
 function exportPDF(){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const monthInput = document.getElementById("month").value;
-  const filename = monthInput ? monthInput.replace('-','_')+'.pdf' : 'Student_Lodge.pdf';
-  let content="<table border='1'><tr><th>No</th><th>Name</th><th>Floor</th><th>Room</th><th>Status</th></tr>";
-  data.forEach((r,i)=>content+=`<tr><td>${i+1}</td><td>${r.name||''}</td><td>${r.floor||''}</td><td>${r.room||''}</td><td>${r.paid?'Paid':'Not Paid'}</td></tr>`);
-  content+="</table>";
-  doc.html(content,{callback:function(doc){doc.save(filename)},x:5,y:5});
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  let y=10;
+  data.forEach((r,i)=>{
+    doc.text(`${i+1}. ${r.name||''} | ${r.floor||''}-${r.room||''} | ${r.paid?'Paid':'Not Paid'}`,10,y);
+    y+=8;
+  });
+  doc.save("Student_Lodge.pdf");
 }
 
-// Change Password
-function changePassword(){
-  let pass = prompt("Enter new password:");
-  if(pass) localStorage.setItem("appPassword",pass);
-  alert("Password updated!");
+/* BACKUP / RESTORE */
+function backup(){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"}));
+  a.download="backup.json";a.click();
+}
+function restore(){
+  const i=document.createElement("input");
+  i.type="file";
+  i.onchange=e=>{
+    const r=new FileReader();
+    r.onload=()=>{data=JSON.parse(r.result);save();render();}
+    r.readAsText(e.target.files[0]);
+  };
+  i.click();
 }
 
-// Load saved
-data = JSON.parse(localStorage.getItem("data")||"[]");
+/* CHANGE PIN */
+function changePin(){
+  const old=prompt("Old PIN");
+  if(old!==localStorage.getItem("pin")) return alert("Wrong PIN");
+  const np=prompt("New 4-digit PIN");
+  if(!np||np.length!==4) return alert("Invalid PIN");
+  localStorage.setItem("pin",np);
+  alert("PIN updated");
+}
+
 render();
 </script>
 </body>

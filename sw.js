@@ -1,4 +1,4 @@
-const cacheName = 'student-lodge-v1';
+const cacheName = 'student-lodge-v2';
 const assets = [
   '/',
   '/index.html',
@@ -8,13 +8,9 @@ const assets = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(cacheName).then(cache => cache.addAll(assets))
-  );
+  e.waitUntil(caches.open(cacheName).then(cache => cache.addAll(assets)));
 });
 
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(resp => resp || fetch(e.request))
-  );
+  e.respondWith(caches.match(e.request).then(resp => resp || fetch(e.request)));
 });

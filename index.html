@@ -14,27 +14,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-html,body{margin:0;padding:0;height:100%;background:#f4f4f5;font-family:system-ui}
+:root{
+  --bg:#f4f4f5; --card:#fff; --text:#111; --primary:#4f46e5; --border:#d1d5db;
+}
+body.dark{
+  --bg:#0b1120; --card:#1e293b; --text:#e5e7eb; --border:#334155;
+}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui}
 body, #list, .table-wrap { min-height: 100vh; }
 /* HEADER */
 header{
-  position:sticky;top:0;z-index:100;background:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.1);border-radius:0 0 22px 22px;
+  position:sticky;top:0;z-index:100;background:var(--card);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(0,0,0,.1);border-radius:0 0 22px 22px;
 }
 .menu{font-size:24px;cursor:pointer}
 .title{font-weight:700}
 /* ADD STUDENT BUTTON TOP RIGHT */
 #addStudentBtn{
-  background:#4f46e5;color:white;border:none;border-radius:14px;padding:6px 10px;font-size:16px;cursor:pointer;
-  margin-left:8px;
+  background:var(--primary);color:white;border:none;border-radius:14px;padding:6px 10px;font-size:16px;cursor:pointer;margin-left:8px;
 }
 /* MENU */
-#menu{position:fixed;top:70px;left:10px;width:230px;background:#fff;border-radius:20px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:200}
-#menu button,#menu input{width:100%;margin:6px 0;padding:10px;border-radius:14px;border:1px solid #d1d5db}
+#menu{position:fixed;top:70px;left:10px;width:230px;background:var(--card);border-radius:20px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);display:none;z-index:200}
+#menu button,#menu input{width:100%;margin:6px 0;padding:10px;border-radius:14px;border:1px solid var(--border)}
 /* SEARCH */
-#searchCard{margin:10px;padding:6px;background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+#searchCard{margin:10px;padding:6px;background:var(--card);border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
 /* LIST */
-.table-wrap{margin:10px;background:#fff;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:calc(100vh - 200px);overflow:auto;padding:8px}
-.row{background:#f4f4f5;border-radius:16px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;}
+.table-wrap{margin:10px;background:var(--card);border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-height:calc(100vh - 200px);overflow:auto;padding:8px}
+.row{background:var(--bg);border-radius:16px;padding:10px;margin-bottom:8px;display:flex;flex-direction:column;}
 .serial{font-weight:600;margin-bottom:6px}
 /* NAME + ARROW + TICK */
 .name-row{display:flex;align-items:center;gap:8px}
@@ -42,10 +47,10 @@ header{
 .arrow.open{transform:rotate(180deg) scale(1.15);}
 .status-icon{font-size:18px}
 /* INPUTS */
-input,select{width:100%;padding:10px;font-size:14px;border-radius:14px;border:1.5px solid #d1d5db;box-sizing:border-box}
-button{padding:10px;border-radius:14px;border:none;background:#4f46e5;color:white;margin-top:6px}
+input,select{width:100%;padding:10px;font-size:14px;border-radius:14px;border:1.5px solid var(--border);box-sizing:border-box}
+button{padding:10px;border-radius:14px;border:none;background:var(--primary);color:white;margin-top:6px}
 /* PAID/NOT PAID */
-.paid-badge{display:inline-block;padding:6px 14px;background:#16a34a;color:white;font-size:13px;font-weight:600;border-radius:999px;margin-top:6px;animation:paidPop .35s ease}
+.paid-badge{display:inline-block;padding:6px 14px;background:#16a34a;color:white;font-size:13px;font-weight:600;border-radius:999px;margin-top:6px;animation:paidPop .5s ease;}
 @keyframes paidPop{0%{transform:translateY(6px) scale(.85);opacity:0}60%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(0) scale(1);opacity:1}}
 .details{display:none;margin-top:8px}
 </style>
@@ -61,6 +66,7 @@ button{padding:10px;border-radius:14px;border:none;background:#4f46e5;color:whit
 
 <div id="menu">
   <input type="month" id="monthPicker" onchange="changeMonth()">
+  <button onclick="toggleDark()">🌙 Dark Mode</button>
   <button onclick="saveData()">💾 Save</button>
   <button onclick="exportPDF()">📄 Export PDF</button>
   <button onclick="backup()">📤 Backup</button>
@@ -80,6 +86,14 @@ const list = document.getElementById("list");
 const menu = document.getElementById("menu");
 document.getElementById("monthPicker").value = monthKey;
 
+/* DARK MODE */
+function toggleDark(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("dark",document.body.classList.contains("dark"));
+}
+if(localStorage.getItem("dark")==="true") document.body.classList.add("dark");
+
+/* MENU */
 function toggleMenu(){menu.style.display = menu.style.display==="block"?"none":"block";}
 function addStudent(){data.push({}); render();}
 
@@ -131,7 +145,21 @@ function render(){
       if(!open){details.style.display="block";arrow.classList.add("open");}
     };
 
-    select.onchange=e=>{r.paid=e.target.value==="Paid"; statusIcon.textContent=r.paid?'✅':'❌'; render();}
+    select.onchange=e=>{
+      r.paid=e.target.value==="Paid";
+      statusIcon.textContent=r.paid?'✅':'❌';
+      if(r.paid){
+        if(!row.querySelector(".paid-badge")){
+          const badge=document.createElement("div");
+          badge.className="paid-badge";
+          badge.textContent="PAID";
+          row.querySelector(".details").appendChild(badge);
+        }
+      }else{
+        const badge=row.querySelector(".paid-badge");
+        if(badge) badge.remove();
+      }
+    }
     del.onclick=()=>{data.splice(i,1); render();}
     list.appendChild(row);
   });
@@ -185,7 +213,7 @@ function restore(){
   i.click();
 }
 
-/* REGISTER SERVICE WORKER FOR OFFLINE SUPPORT */
+/* SERVICE WORKER FOR OFFLINE */
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(()=>console.log("Service Worker Registered"));
 }

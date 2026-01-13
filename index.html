@@ -16,6 +16,50 @@ body{
 }
 body.dark{background:#020617;color:#e5e7eb}
 
+/* SPLASH */
+#splash{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#4f46e5,#1e293b);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:center;
+  padding:30px 20px;
+  z-index:5000;
+  text-align:center;
+}
+#splash h1{
+  margin-top:20px;
+  font-size:26px;
+}
+#splash h1 span{
+  display:block;
+  font-size:14px;
+  opacity:.9;
+}
+#splash h2{
+  margin-top:10px;
+  font-weight:500;
+}
+#splash .go-btn{
+  width:160px;
+  padding:14px;
+  font-size:16px;
+  border-radius:30px;
+  background:#fff;
+  color:#4f46e5;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+}
+#splash footer{
+  font-size:13px;
+  opacity:.85;
+}
+
+/* APP */
 header{
   position:sticky;
   top:0;
@@ -93,7 +137,7 @@ body.dark .card{background:#1e293b}
   display:none;
   margin-top:8px;
 }
-.expand.show{display:block;animation:fade .25s}
+.expand.show{display:block}
 
 input{
   width:100%;
@@ -102,15 +146,22 @@ input{
   border-radius:14px;
   border:1px solid #ccc;
 }
-
-@keyframes fade{
-  from{opacity:0;transform:scale(.96)}
-  to{opacity:1;transform:scale(1)}
-}
 </style>
 </head>
 
 <body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div>
+    <h1>Fawad Apps <span>A Company of Trust</span></h1>
+    <h2>Naoushad Raushan Lodge</h2>
+  </div>
+
+  <button class="go-btn" type="button" onclick="enterApp()">GO</button>
+
+  <footer>This app is created by Fawad Ansari</footer>
+</div>
 
 <header>
   <div class="menu-btn" id="menuBtn">⋮</div>
@@ -133,6 +184,11 @@ input{
 <div id="list"></div>
 
 <script>
+function enterApp(){
+  document.getElementById("splash").style.display="none";
+}
+
+/* MENU */
 const menu=document.getElementById("menu");
 document.getElementById("menuBtn").onclick=(e)=>{
   const r=e.target.getBoundingClientRect();
@@ -141,6 +197,7 @@ document.getElementById("menuBtn").onclick=(e)=>{
   menu.style.display=menu.style.display==="block"?"none":"block";
 };
 
+/* DATA */
 let currentMonth=localStorage.getItem("currentMonth")||new Date().toISOString().slice(0,7);
 let data=JSON.parse(localStorage.getItem("data_"+currentMonth)||"[]");
 monthPicker.value=currentMonth;
@@ -149,7 +206,6 @@ function addStudent(){
   data.push({name:"",room:"",floor:"",mobile:"",paid:false,open:false});
   render();
 }
-
 function toggleRow(i){data[i].open=!data[i].open;render()}
 function togglePaid(i){data[i].paid=!data[i].paid;render()}
 function removeRow(i){data.splice(i,1);render()}
@@ -172,16 +228,15 @@ function render(){
         <button onclick="togglePaid(${i})">${r.paid?"Paid":"Not Paid"}</button>
         <button style="background:#991b1b" onclick="removeRow(${i})">Delete</button>
       </div>
-    </div>`; 
+    </div>`;
   });
 }
 
-/* ✅ FIXED SEARCH */
 function search(q){
-  q = q.toLowerCase();
-  document.querySelectorAll(".card").forEach((card, i)=>{
-    const name = data[i]?.name?.toLowerCase() || "";
-    card.style.display = name.includes(q) ? "" : "none";
+  q=q.toLowerCase();
+  document.querySelectorAll(".card").forEach((card,i)=>{
+    const name=data[i]?.name?.toLowerCase()||"";
+    card.style.display=name.includes(q)?"":"none";
   });
 }
 
@@ -228,39 +283,14 @@ if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
 function exportPDF(){
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p","mm","a4");
-  const pageWidth = doc.internal.pageSize.getWidth();
-  let startX = 10;
-  let startY = 20;
-  let colWidths = [20, pageWidth-70, 40];
-  let rowHeight = Math.max(8, pageWidth/50);
-
-  doc.setFontSize(16);
-  doc.text("Student Lodge Report", pageWidth/2,14,{align:"center"});
-  doc.setFontSize(12);
-  doc.text(currentMonth, pageWidth/2,22,{align:"center"});
-
-  doc.setFillColor(79,70,229);
-  doc.setTextColor(255,255,255);
-  ["No","Name","Status"].forEach((h,i)=>{
-    doc.rect(startX + (i>0 ? colWidths[0]+(i-1)*(colWidths[1]+colWidths[2]) : 0),startY,colWidths[i],rowHeight,"F");
-    doc.text(h,startX + (i>0 ? colWidths[0]+(i-1)*(colWidths[1]+colWidths[2]) : 0)+2,startY+7);
-  });
-
-  startY += rowHeight;
+  const doc = new jsPDF();
+  let y=20;
+  doc.text("Student Lodge Report",105,10,{align:"center"});
   data.forEach((r,i)=>{
-    if(startY > 280){doc.addPage(); startY=20;}
-    doc.setFillColor(i%2?240:255);
-    doc.rect(startX,startY,pageWidth-20,rowHeight,"F");
-
-    doc.setTextColor(0,0,0);
-    doc.text(String(i+1),startX+2,startY+7);
-    doc.text(r.name||"",startX+colWidths[0]+2,startY+7);
-    doc.setTextColor(r.paid?22:220,r.paid?163:38,74);
-    doc.text(r.paid?"PAID":"NOT PAID",startX+colWidths[0]+colWidths[1]+2,startY+7);
-    startY += rowHeight;
+    if(y>280){doc.addPage();y=20;}
+    doc.text(`${i+1}. ${r.name||""} - ${r.paid?"PAID":"NOT PAID"}`,10,y);
+    y+=8;
   });
-
   doc.save("Student_Lodge_"+currentMonth+".pdf");
 }
 

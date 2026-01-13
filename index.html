@@ -2,303 +2,263 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Fawad Apps – Student Lodge</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4f46e5">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Lodge – Fawad Apps</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
 <style>
-:root{
-  --bg:#f4f4f5;
-  --card:#ffffff;
-  --text:#111827;
-  --primary:#4f46e5;
-  --border:#d1d5db;
-  --shadow:0 10px 25px rgba(0,0,0,.12);
-}
-body.dark{
-  --bg:#020617;
-  --card:#0f172a;
-  --text:#e5e7eb;
-  --border:#334155;
-  --shadow:0 10px 25px rgba(0,0,0,.4);
-}
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-}
-input{user-select:text}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
   margin:0;
-  font-family:system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--text);
+  font-family:system-ui, sans-serif;
+  background:#f4f4f5;
 }
+body.dark{background:#020617;color:#e5e7eb}
 
-/* SPLASH */
-#splash{
-  position:fixed;inset:0;
-  background:var(--primary);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-}
-.logo{
-  font-size:36px;
-  font-weight:900;
-  color:white;
-  animation:float 2.5s ease-in-out infinite;
-}
-#startBtn{
-  margin-top:28px;
-  padding:14px 44px;
-  border-radius:999px;
-  border:none;
-  font-weight:700;
-}
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-12px)}
-}
-
-/* HEADER */
 header{
-  position:sticky;top:0;
-  background:var(--card);
+  position:sticky;
+  top:0;
+  background:#fff;
+  padding:14px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:14px 16px;
-  box-shadow:var(--shadow);
+  align-items:center;
   z-index:100;
 }
+body.dark header{background:#020617}
 
-.left, .right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.menu,.add{
+.menu-btn,.add-btn{
   font-size:22px;
   padding:8px 14px;
   border-radius:14px;
-}
-.add{
-  background:var(--primary);
-  color:white;
-  font-size:26px;
+  cursor:pointer;
 }
 
-/* MENU */
 #menu{
   position:fixed;
-  top:68px;
-  left:12px;
-  background:var(--card);
-  padding:10px;
-  width:220px;
+  background:#fff;
   border-radius:18px;
-  box-shadow:var(--shadow);
+  padding:12px;
+  width:240px;
   display:none;
-  z-index:200;
+  z-index:1000;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
-#menu button,#menu input{
+body.dark #menu{background:#1e293b}
+
+button{
   width:100%;
-  margin-bottom:6px;
+  padding:10px;
+  margin:6px 0;
+  border:none;
+  border-radius:14px;
+  background:#4f46e5;
+  color:#fff;
+  font-size:14px;
 }
 
-/* SEARCH */
 #search{
+  width:calc(100% - 20px);
   margin:10px;
   padding:12px;
-  width:calc(100% - 20px);
-  border-radius:999px;
-  border:1.5px solid var(--border);
+  border-radius:18px;
+  border:1px solid #ccc;
 }
 
-/* LIST */
-.row{
+.card{
+  background:#fff;
   margin:10px;
-  background:var(--card);
   border-radius:20px;
-  box-shadow:var(--shadow);
+  padding:10px;
 }
-.row-head{
+body.dark .card{background:#1e293b}
+
+.row{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:14px;
+  gap:8px;
 }
-.serial{font-weight:700;width:28px}
-.dot{width:10px;height:10px;border-radius:50%}
-.arrow{margin-left:auto;transition:.25s}
-.arrow.open{transform:rotate(180deg)}
-.details{
+
+.arrow{
+  cursor:pointer;
+  transition:.3s;
+}
+.arrow.open{transform:rotate(90deg)}
+
+.tick.paid{color:#16a34a}
+.tick.unpaid{color:#dc2626}
+
+.expand{
   display:none;
-  padding:12px;
+  margin-top:8px;
 }
+.expand.show{display:block;animation:fade .25s}
+
 input{
   width:100%;
   padding:10px;
+  margin:4px 0;
   border-radius:14px;
-  border:1.5px solid var(--border);
-  margin-bottom:6px;
+  border:1px solid #ccc;
 }
-button{
-  padding:10px;
-  border:none;
-  border-radius:14px;
-  background:var(--primary);
-  color:white;
-  font-weight:600;
+
+@keyframes fade{
+  from{opacity:0;transform:scale(.96)}
+  to{opacity:1;transform:scale(1)}
 }
-.delete{background:#dc2626}
 </style>
 </head>
 
 <body>
 
-<div id="splash">
-  <div class="logo">Fawad Apps</div>
-  <button id="startBtn" onclick="startApp()">START</button>
-</div>
-
 <header>
-  <div class="left">
-    <div class="menu" onclick="toggleMenu()">⋮</div>
-    <strong id="monthTitle"></strong>
-  </div>
-  <div class="right">
-    <div class="add" onclick="add()">＋</div>
-  </div>
+  <div class="menu-btn" id="menuBtn">⋮</div>
+  <b>Fawad Apps</b>
+  <div class="add-btn" onclick="addStudent()">＋</div>
 </header>
 
 <div id="menu">
   <input type="month" id="monthPicker">
-  <button onclick="changeMonth()">📅 New / Switch Month</button>
+  <button onclick="changeMonth()">📅 Change Month</button>
+  <button onclick="save()">💾 Save</button>
+  <button onclick="exportBackup()">📤 Export Backup</button>
+  <button onclick="importBackup()">📥 Import Backup</button>
   <button onclick="toggleDark()">🌙 Dark Mode</button>
   <button onclick="exportPDF()">📄 Export PDF</button>
+  <input type="file" id="importFile" hidden>
 </div>
 
-<input id="search" placeholder="Search name…" oninput="search(this.value)">
+<input id="search" placeholder="Search name" oninput="search(this.value)">
 <div id="list"></div>
 
 <script>
-let currentMonth = localStorage.getItem("currentMonth") || new Date().toISOString().slice(0,7);
-let data = JSON.parse(localStorage.getItem("data_"+currentMonth) || "[]");
+/* MENU POSITION FIX */
+const menu=document.getElementById("menu");
+document.getElementById("menuBtn").onclick=(e)=>{
+  const r=e.target.getBoundingClientRect();
+  menu.style.top=(r.bottom+8)+"px";
+  menu.style.left=(r.right-menu.offsetWidth)+"px";
+  menu.style.display=menu.style.display==="block"?"none":"block";
+};
 
-monthTitle.textContent = currentMonth;
+/* DATA */
+let currentMonth=localStorage.getItem("currentMonth")||new Date().toISOString().slice(0,7);
+let data=JSON.parse(localStorage.getItem("data_"+currentMonth)||"[]");
+monthPicker.value=currentMonth;
 
-function startApp(){
-  splash.style.opacity=0;
-  setTimeout(()=>splash.remove(),300);
-}
-function toggleMenu(){
-  menu.style.display = menu.style.display==="block"?"none":"block";
-}
-function changeMonth(){
-  const m = monthPicker.value;
-  if(!m) return;
-  save();
-  currentMonth = m;
-  localStorage.setItem("currentMonth",m);
-  data = JSON.parse(localStorage.getItem("data_"+m) || "[]");
-  monthTitle.textContent = m;
+function addStudent(){
+  data.push({name:"",room:"",floor:"",mobile:"",paid:false,open:false});
   render();
-  toggleMenu();
 }
+
+function toggleRow(i){data[i].open=!data[i].open;render()}
+function togglePaid(i){data[i].paid=!data[i].paid;render()}
+function removeRow(i){data.splice(i,1);render()}
+
+function render(){
+  list.innerHTML="";
+  data.forEach((r,i)=>{
+    list.innerHTML+=`
+    <div class="card">
+      <div class="row">
+        <div>${i+1}</div>
+        <div class="tick ${r.paid?"paid":"unpaid"}">${r.paid?"✔":"✖"}</div>
+        <input value="${r.name}" placeholder="Name" oninput="data[${i}].name=this.value">
+        <div class="arrow ${r.open?"open":""}" onclick="toggleRow(${i})">▶</div>
+      </div>
+      <div class="expand ${r.open?"show":""}">
+        <input placeholder="Room" value="${r.room||""}" oninput="data[${i}].room=this.value">
+        <input placeholder="Floor" value="${r.floor||""}" oninput="data[${i}].floor=this.value">
+        <input placeholder="Mobile" value="${r.mobile||""}" oninput="data[${i}].mobile=this.value">
+        <button onclick="togglePaid(${i})">${r.paid?"Paid":"Not Paid"}</button>
+        <button style="background:#991b1b" onclick="removeRow(${i})">Delete</button>
+      </div>
+    </div>`;
+  });
+}
+
+function search(q){
+  q=q.toLowerCase();
+  [...document.querySelectorAll(".card")].forEach(c=>{
+    c.style.display=c.innerText.toLowerCase().includes(q)?"":"none";
+  });
+}
+
+function save(){
+  localStorage.setItem("data_"+currentMonth,JSON.stringify(data));
+  localStorage.setItem("currentMonth",currentMonth);
+}
+
+function changeMonth(){
+  save();
+  currentMonth=monthPicker.value;
+  data=JSON.parse(localStorage.getItem("data_"+currentMonth)||"[]");
+  render();
+}
+
+function exportBackup(){
+  save();
+  const blob=new Blob([JSON.stringify({month:currentMonth,data},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="backup_"+currentMonth+".json";
+  a.click();
+}
+
+function importBackup(){importFile.click()}
+importFile.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{
+    const b=JSON.parse(r.result);
+    currentMonth=b.month;
+    data=b.data;
+    save();
+    monthPicker.value=currentMonth;
+    render();
+  };
+  r.readAsText(e.target.files[0]);
+};
+
 function toggleDark(){
   document.body.classList.toggle("dark");
   localStorage.setItem("dark",document.body.classList.contains("dark"));
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-function add(){
-  data.push({});
-  save();
-  render();
-}
-function save(){
-  localStorage.setItem("data_"+currentMonth,JSON.stringify(data));
-}
-function togglePaid(i){
-  data[i].paid = !data[i].paid;
-  save();render();
-}
-function del(i){
-  data.splice(i,1);
-  save();render();
-}
-
-function render(){
-  list.innerHTML="";
-  data.forEach((r,i)=>{
-    const row=document.createElement("div");
-    row.className="row";
-    row.innerHTML=`
-      <div class="row-head">
-        <div class="serial">${i+1}</div>
-        <div class="dot" style="background:${r.paid?'#16a34a':'#dc2626'}"></div>
-        <strong>${r.name||"Unnamed"}</strong>
-        <div class="arrow">⌄</div>
-      </div>
-      <div class="details">
-        <input placeholder="Name" value="${r.name||''}" oninput="data[${i}].name=this.value">
-        <input placeholder="Room" value="${r.room||''}" oninput="data[${i}].room=this.value">
-        <input placeholder="Floor" value="${r.floor||''}" oninput="data[${i}].floor=this.value">
-        <input placeholder="Mobile" value="${r.mobile||''}" oninput="data[${i}].mobile=this.value">
-        <button onclick="togglePaid(${i})">${r.paid?'PAID ✓':'NOT PAID ✗'}</button>
-        <button class="delete" onclick="del(${i})">Delete</button>
-      </div>`;
-    const head=row.querySelector(".row-head");
-    const details=row.querySelector(".details");
-    const arrow=row.querySelector(".arrow");
-    head.onclick=()=>{
-      const open=details.style.display==="block";
-      document.querySelectorAll(".details").forEach(d=>d.style.display="none");
-      document.querySelectorAll(".arrow").forEach(a=>a.classList.remove("open"));
-      if(!open){details.style.display="block";arrow.classList.add("open")}
-    };
-    list.appendChild(row);
-  });
-}
-
-function search(q){
-  q=q.toLowerCase();
-  document.querySelectorAll(".row").forEach(r=>{
-    r.style.display=r.innerText.toLowerCase().includes(q)?"":"none";
-  });
-}
-
+/* COLORFUL PDF */
 function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
-  doc.text("Student Lodge – "+currentMonth,14,14);
-  doc.autoTable({
-    head:[["S.No","Name","Status"]],
-    body:data.map((r,i)=>[i+1,r.name||"",r.paid?"Paid":"Not Paid"]),
-    startY:20
+  doc.setFontSize(16);
+  doc.text("Student Lodge Report",14,14);
+  doc.setFontSize(12);
+  doc.text(currentMonth,14,22);
+
+  let y=32;
+  doc.setFillColor(79,70,229);
+  doc.setTextColor(255,255,255);
+  ["No","Name","Status"].forEach((h,i)=>{
+    doc.rect(14+i*60,y,60,10,"F");
+    doc.text(h,18+i*60,y+7);
   });
+
+  y+=10;
+  data.forEach((r,i)=>{
+    doc.setFillColor(i%2?240:255);
+    doc.rect(14,y,180,10,"F");
+    doc.setTextColor(0,0,0);
+    doc.text(String(i+1),18,y+7);
+    doc.text(r.name||"",78,y+7);
+    doc.setTextColor(r.paid?22:220,r.paid?163:38,74);
+    doc.text(r.paid?"PAID":"NOT PAID",138,y+7);
+    y+=10;
+  });
+
   doc.save("Student_Lodge_"+currentMonth+".pdf");
 }
 
 render();
-</script>
-
-<script>
-if("serviceWorker"in navigator){
-  navigator.serviceWorker.register("service-worker.js");
-}
 </script>
 
 </body>

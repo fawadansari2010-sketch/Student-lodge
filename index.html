@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Fawad Apps – Student Lodge</title>
 
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.png">
 <meta name="theme-color" content="#4f46e5">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -29,21 +28,18 @@ body.dark{
   --shadow:0 10px 25px rgba(0,0,0,.4);
 }
 
-/* REMOVE BLUE TAP HIGHLIGHT */
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:transparent;
   user-select:none;
 }
-input{
-  user-select:text;
-}
+input{user-select:text}
 
 body{
   margin:0;
+  font-family:system-ui,sans-serif;
   background:var(--bg);
   color:var(--text);
-  font-family:system-ui,sans-serif;
 }
 
 /* SPLASH */
@@ -60,104 +56,96 @@ body{
   font-size:36px;
   font-weight:900;
   color:white;
-  animation:float 2.4s ease-in-out infinite;
+  animation:float 2.5s ease-in-out infinite;
 }
 #startBtn{
   margin-top:28px;
-  padding:14px 42px;
+  padding:14px 44px;
   border-radius:999px;
   border:none;
-  background:white;
-  color:var(--primary);
   font-weight:700;
-  animation:pulse 1.5s infinite;
 }
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
 
 /* HEADER */
 header{
-  position:sticky;top:0;z-index:100;
+  position:sticky;top:0;
   background:var(--card);
-  padding:14px 16px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
   box-shadow:var(--shadow);
-  border-radius:0 0 22px 22px;
+  z-index:100;
 }
 
-/* THREE DOTS – WIDER */
-.menu{
+.left, .right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.menu,.add{
   font-size:22px;
-  cursor:pointer;
-  padding:8px 12px;
-  border-radius:12px;
+  padding:8px 14px;
+  border-radius:14px;
 }
-.menu:active{opacity:.6}
+.add{
+  background:var(--primary);
+  color:white;
+  font-size:26px;
+}
 
-.title{font-weight:800}
-
-/* MENU PANEL */
+/* MENU */
 #menu{
   position:fixed;
   top:68px;
   left:12px;
-  width:220px;
   background:var(--card);
-  border-radius:18px;
   padding:10px;
+  width:220px;
+  border-radius:18px;
   box-shadow:var(--shadow);
   display:none;
   z-index:200;
 }
-#menu button,#menu input{width:100%;margin-bottom:6px}
+#menu button,#menu input{
+  width:100%;
+  margin-bottom:6px;
+}
 
 /* SEARCH */
 #search{
   margin:10px;
   padding:12px;
+  width:calc(100% - 20px);
   border-radius:999px;
   border:1.5px solid var(--border);
-  background:var(--card);
-  width:calc(100% - 20px);
 }
 
 /* LIST */
-#list{padding-bottom:140px}
 .row{
   margin:10px;
   background:var(--card);
   border-radius:20px;
   box-shadow:var(--shadow);
-  overflow:hidden;
 }
 .row-head{
   display:flex;
   align-items:center;
-  padding:14px;
   gap:10px;
+  padding:14px;
 }
-.serial{
-  font-weight:700;
-  width:28px;
-}
-.status-dot{
-  width:10px;height:10px;border-radius:50%;
-}
-.arrow{
-  margin-left:auto;
-  transition:transform .25s ease;
-}
+.serial{font-weight:700;width:28px}
+.dot{width:10px;height:10px;border-radius:50%}
+.arrow{margin-left:auto;transition:.25s}
 .arrow.open{transform:rotate(180deg)}
 .details{
   display:none;
   padding:12px;
-  animation:expand .25s ease;
-}
-@keyframes expand{
-  from{opacity:0;transform:translateY(-6px)}
-  to{opacity:1;transform:translateY(0)}
 }
 input{
   width:100%;
@@ -167,31 +155,14 @@ input{
   margin-bottom:6px;
 }
 button{
+  padding:10px;
   border:none;
   border-radius:14px;
-  padding:10px;
   background:var(--primary);
   color:white;
   font-weight:600;
 }
 .delete{background:#dc2626}
-
-/* PLUS BUTTON – FIXED */
-#add{
-  position:fixed;
-  bottom:24px;
-  right:24px;
-  width:68px;
-  height:68px;
-  border-radius:50%;
-  font-size:34px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:var(--shadow);
-  z-index:150;
-}
-#add:active{transform:scale(.94)}
 </style>
 </head>
 
@@ -203,35 +174,48 @@ button{
 </div>
 
 <header>
-  <div class="menu" onclick="toggleMenu()">⋮</div>
-  <div class="title">Student Lodge</div>
+  <div class="left">
+    <div class="menu" onclick="toggleMenu()">⋮</div>
+    <strong id="monthTitle"></strong>
+  </div>
+  <div class="right">
+    <div class="add" onclick="add()">＋</div>
+  </div>
 </header>
 
 <div id="menu">
-  <input type="month" id="month">
+  <input type="month" id="monthPicker">
+  <button onclick="changeMonth()">📅 New / Switch Month</button>
   <button onclick="toggleDark()">🌙 Dark Mode</button>
-  <button onclick="save()">💾 Save</button>
-  <button onclick="backup()">📤 Backup</button>
-  <button onclick="restore()">📥 Restore</button>
-  <button onclick="exportPDF()">📄 PDF</button>
+  <button onclick="exportPDF()">📄 Export PDF</button>
 </div>
 
 <input id="search" placeholder="Search name…" oninput="search(this.value)">
-
 <div id="list"></div>
 
-<button id="add" onclick="add()">＋</button>
-
 <script>
-let data=JSON.parse(localStorage.getItem("data")||"[]");
-let monthKey=new Date().toISOString().slice(0,7);
+let currentMonth = localStorage.getItem("currentMonth") || new Date().toISOString().slice(0,7);
+let data = JSON.parse(localStorage.getItem("data_"+currentMonth) || "[]");
+
+monthTitle.textContent = currentMonth;
 
 function startApp(){
   splash.style.opacity=0;
   setTimeout(()=>splash.remove(),300);
 }
 function toggleMenu(){
-  menu.style.display=menu.style.display==="block"?"none":"block";
+  menu.style.display = menu.style.display==="block"?"none":"block";
+}
+function changeMonth(){
+  const m = monthPicker.value;
+  if(!m) return;
+  save();
+  currentMonth = m;
+  localStorage.setItem("currentMonth",m);
+  data = JSON.parse(localStorage.getItem("data_"+m) || "[]");
+  monthTitle.textContent = m;
+  render();
+  toggleMenu();
 }
 function toggleDark(){
   document.body.classList.toggle("dark");
@@ -239,24 +223,22 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-function add(){data.push({});save();render();}
-function save(){localStorage.setItem("data",JSON.stringify(data));}
-function backup(){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data)]));
-  a.download="backup.json";a.click();
+function add(){
+  data.push({});
+  save();
+  render();
 }
-function restore(){
-  const i=document.createElement("input");
-  i.type="file";
-  i.onchange=e=>{
-    const r=new FileReader();
-    r.onload=()=>{data=JSON.parse(r.result);render();save()}
-    r.readAsText(e.target.files[0]);
-  };i.click();
+function save(){
+  localStorage.setItem("data_"+currentMonth,JSON.stringify(data));
 }
-function togglePaid(i){data[i].paid=!data[i].paid;save();render();}
-function del(i){data.splice(i,1);save();render();}
+function togglePaid(i){
+  data[i].paid = !data[i].paid;
+  save();render();
+}
+function del(i){
+  data.splice(i,1);
+  save();render();
+}
 
 function render(){
   list.innerHTML="";
@@ -266,7 +248,7 @@ function render(){
     row.innerHTML=`
       <div class="row-head">
         <div class="serial">${i+1}</div>
-        <div class="status-dot" style="background:${r.paid?'#16a34a':'#dc2626'}"></div>
+        <div class="dot" style="background:${r.paid?'#16a34a':'#dc2626'}"></div>
         <strong>${r.name||"Unnamed"}</strong>
         <div class="arrow">⌄</div>
       </div>
@@ -290,23 +272,26 @@ function render(){
     list.appendChild(row);
   });
 }
+
 function search(q){
   q=q.toLowerCase();
   document.querySelectorAll(".row").forEach(r=>{
     r.style.display=r.innerText.toLowerCase().includes(q)?"":"none";
   });
 }
+
 function exportPDF(){
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
-  doc.text("Student Lodge – "+monthKey,14,14);
+  doc.text("Student Lodge – "+currentMonth,14,14);
   doc.autoTable({
     head:[["S.No","Name","Status"]],
     body:data.map((r,i)=>[i+1,r.name||"",r.paid?"Paid":"Not Paid"]),
     startY:20
   });
-  doc.save("Student_Lodge_"+monthKey+".pdf");
+  doc.save("Student_Lodge_"+currentMonth+".pdf");
 }
+
 render();
 </script>
 

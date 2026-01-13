@@ -133,7 +133,6 @@ input{
 <div id="list"></div>
 
 <script>
-/* MENU POSITION FIX */
 const menu=document.getElementById("menu");
 document.getElementById("menuBtn").onclick=(e)=>{
   const r=e.target.getBoundingClientRect();
@@ -142,7 +141,6 @@ document.getElementById("menuBtn").onclick=(e)=>{
   menu.style.display=menu.style.display==="block"?"none":"block";
 };
 
-/* DATA */
 let currentMonth=localStorage.getItem("currentMonth")||new Date().toISOString().slice(0,7);
 let data=JSON.parse(localStorage.getItem("data_"+currentMonth)||"[]");
 monthPicker.value=currentMonth;
@@ -178,10 +176,12 @@ function render(){
   });
 }
 
+/* ✅ FIXED SEARCH */
 function search(q){
-  q=q.toLowerCase();
-  [...document.querySelectorAll(".card")].forEach(c=>{
-    c.style.display=c.innerText.toLowerCase().includes(q)?"":"none";
+  q = q.toLowerCase();
+  document.querySelectorAll(".card").forEach((card, i)=>{
+    const name = data[i]?.name?.toLowerCase() || "";
+    card.style.display = name.includes(q) ? "" : "none";
   });
 }
 
@@ -226,23 +226,20 @@ function toggleDark(){
 }
 if(localStorage.getItem("dark")==="true")document.body.classList.add("dark");
 
-/* MOBILE-FRIENDLY PDF */
 function exportPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p","mm","a4");
   const pageWidth = doc.internal.pageSize.getWidth();
   let startX = 10;
   let startY = 20;
-  let colWidths = [20, pageWidth-70, 40]; // No, Name, Status
-  let rowHeight = Math.max(8, pageWidth/50); // dynamic row height for small screens
+  let colWidths = [20, pageWidth-70, 40];
+  let rowHeight = Math.max(8, pageWidth/50);
 
-  // HEADER
   doc.setFontSize(16);
   doc.text("Student Lodge Report", pageWidth/2,14,{align:"center"});
   doc.setFontSize(12);
   doc.text(currentMonth, pageWidth/2,22,{align:"center"});
 
-  // Table header
   doc.setFillColor(79,70,229);
   doc.setTextColor(255,255,255);
   ["No","Name","Status"].forEach((h,i)=>{
@@ -250,7 +247,6 @@ function exportPDF(){
     doc.text(h,startX + (i>0 ? colWidths[0]+(i-1)*(colWidths[1]+colWidths[2]) : 0)+2,startY+7);
   });
 
-  // Table rows
   startY += rowHeight;
   data.forEach((r,i)=>{
     if(startY > 280){doc.addPage(); startY=20;}

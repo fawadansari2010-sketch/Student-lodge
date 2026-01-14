@@ -21,14 +21,14 @@ header{position:sticky;top:0;background:#fff;padding:14px;display:flex;justify-c
 body.dark header{background:#020617}
 .menu-btn,.add-btn{font-size:22px;padding:8px 14px;border-radius:14px;transition:.2s;}
 .menu-btn:active,.add-btn:active{transform:scale(.9);}
-#menu{position:fixed;background:#fff;border-radius:18px;padding:12px;width:240px;display:none;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:fadeIn .2s ease;}
+#menu{position:fixed;background:#fff;border-radius:18px;padding:12px;width:90%;max-width:280px;display:none;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:fadeIn .2s ease;}
 body.dark #menu{background:#1e293b}
 button{width:100%;padding:10px;margin:6px 0;border:none;border-radius:14px;background:#4f46e5;color:#fff;font-size:14px;transition:.2s;}
 button:active{transform:scale(.95)}
 #search{width:calc(100% - 20px);margin:10px;padding:12px;border-radius:18px;border:1px solid #ccc;}
 .card{background:#fff;margin:10px;border-radius:20px;padding:10px;animation:fadeIn .2s ease;}
 body.dark .card{background:#1e293b}
-.row{display:flex;align-items:center;gap:8px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .arrow{transition:.2s}
 .arrow.open{transform:rotate(90deg)}
 .tick.paid{color:#16a34a}
@@ -38,6 +38,7 @@ body.dark .card{background:#1e293b}
 input{width:100%;padding:10px;margin:4px 0;border-radius:14px;border:1px solid #ccc;font-size:16px;}
 #pdfProgressContainer{position:fixed;bottom:10px; left:50%; transform:translateX(-50%); width:90%; max-width:400px; height:20px; background:#ddd; border-radius:10px; display:none; overflow:hidden; z-index:5000;}
 #pdfProgressBar{height:100%; width:0%; background:#4f46e5; border-radius:10px; transition:width .2s;}
+@media(max-width:500px){.row > div,input,button{flex:1 1 100%;}}
 </style>
 </head>
 <body>
@@ -92,7 +93,7 @@ function enterApp(){ splash.style.display="none"; sessionStorage.setItem("entere
 menuBtn.onclick=e=>{
   const r=e.target.getBoundingClientRect();
   menu.style.top=r.bottom+8+"px";
-  menu.style.left=r.right-menu.offsetWidth+"px";
+  menu.style.left=Math.min(r.right-menu.offsetWidth,window.innerWidth-10)+"px";
   menu.style.display=menu.style.display==="block"?"none":"block";
 };
 

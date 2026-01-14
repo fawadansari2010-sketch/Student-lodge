@@ -1,12 +1,11 @@
 {
   "name": "Student Lodge – Fawad Apps",
   "short_name": "Student Lodge",
-  "description": "Manage your lodge payments, WhatsApp reminders, backups, and export PDFs.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#4f46e5",
+  "background_color": "#ffffff",
   "theme_color": "#4f46e5",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
